@@ -8,6 +8,9 @@ const theme = createTheme({
     secondary: {
       main: "#d18d39",
     },
+    tetiary: {
+      main: "#1A2027",
+    },
   },
   colorSchemes: {
     dark: true,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Blog from "./PostUi";
-import Axios from "axios";
+
 import {
   Box,
   Container,
@@ -11,18 +11,16 @@ import {
   styled,
   Typography,
 } from "@mui/material";
+import PostLoader from "./PostLoader";
+import { useGlobalHooks } from "../context";
 
 const AllPost = () => {
-  const [blogs, setBlogs] = useState([]);
   const [page, setPage] = React.useState(1);
   const handleChange = (event, value) => {
     setPage(value);
   };
-  const posts = async () => {
-    const res = await Axios.get("http://localhost:4000/api/v1/post");
+  const { blogs, loading, posts, lovedPost } = useGlobalHooks();
 
-    setBlogs(res.data.data);
-  };
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
     ...theme.typography.body2,
@@ -34,11 +32,26 @@ const AllPost = () => {
     }),
   }));
   useEffect(() => {
-    posts();
-  }, []);
+    posts(page);
+  }, [page]);
 
   return (
     <>
+      <Box>
+        <Typography
+          sx={{
+            textAlign: "center",
+            fontFamily: "fantasy",
+            fontWeight: 600,
+            textTransform: "capitalize",
+          }}
+          variant="h4"
+          component="h1"
+          gutterBottom
+        >
+          Trending Gist.
+        </Typography>
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -47,6 +60,7 @@ const AllPost = () => {
           width: "100%",
         }}
       >
+        {/* {loading ? <PostLoader /> : null} */}
         <Grid2 container spacing={2}>
           {blogs.map((post) => (
             <Item key={post._id}>
@@ -57,7 +71,11 @@ const AllPost = () => {
           ))}
         </Grid2>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+      <Box
+        color="bisque"
+        mt={3}
+        sx={{ display: "flex", justifyContent: "center" }}
+      >
         <Paper>
           <Stack spacing={2}>
             <Pagination

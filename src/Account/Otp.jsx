@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -9,10 +9,10 @@ import {
   Alert,
   Paper,
 } from "@mui/material";
-import { ArrowBack, ArrowBackIosNew } from "@mui/icons-material";
+import { ArrowBackIosNew } from "@mui/icons-material";
 import Reset from "./passwdReset";
 import { useGlobalHooks } from "../context";
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 const OTPReset = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -21,21 +21,37 @@ const OTPReset = () => {
   const [emailOtp, setEmailOtp] = useState([]);
   const [switchToReset, setSwitchToReset] = useState(true);
   const [email, setEmail] = useState("");
+  const [customError, setCustomError] = useState("");
   const { baseurl } = useGlobalHooks();
+  const [countdown, setCountdown] = useState(70);
+  const [resend, setResend] = useState(false);
+
+  // Handle email validation and OTP generation
   const handleTogglePage = async () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setCustomError("Please enter a valid email address");
+      return;
+    }
+    setResend(false);
     const otpNum = Array.from({ length: 4 }, () =>
       Math.floor(Math.random() * 10)
     ).join("");
-    setEmailOtp([...otpNum]);
 
-    const resp = await axios.post(`${baseurl}/users/email`, {
-      email,
-      otp: otpNum,
-    });
-    console.log(resp);
-
+    setEmailOtp(otpNum.split("")); // Store OTP correctly
     setTogglePage(!togglePage);
+
+    try {
+      const resp = await axios.post(`${baseurl}/users/email`, {
+        email,
+        otp: otpNum,
+      });
+      console.log(resp);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+    }
   };
+
+  // Handle OTP input change
   const handleChange = (value, index) => {
     if (isNaN(value)) return;
     const newOtp = [...otp];
@@ -47,17 +63,29 @@ const OTPReset = () => {
     }
   };
 
+  // Countdown for OTP resend
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setResend(true);
+    }
+  }, [countdown]); // Added countdown dependency
+
+  // Handle OTP verification
   const handleSubmit = () => {
     if (otp.join("").length !== otp.length) {
       setError("Please fill all fields");
       return;
     }
-    if (emailOtp.join("") == otp.join("")) {
+    if (emailOtp.join("") === otp.join("")) {
       setSwitchToReset(false);
+    } else {
+      setError("Incorrect OTP. Please try again.");
     }
-    // Submit logic here
-    setError("");
   };
+
   if (switchToReset) {
     if (togglePage) {
       return (
@@ -71,7 +99,12 @@ const OTPReset = () => {
               flexDirection: "column",
             }}
           >
-            <Paper sx={{ textAlign: "center" }} elevation={3}>
+            {customError && (
+              <Alert variant="filled" severity="error">
+                {customError}
+              </Alert>
+            )}
+            <Paper sx={{ textAlign: "center", padding: 3 }} elevation={3}>
               <h1>Reset Password</h1>
               <h5>
                 Enter your email address below to receive a password reset link.
@@ -84,6 +117,8 @@ const OTPReset = () => {
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  fullWidth
+                  margin="normal"
                 />
               </Box>
               <Box mt={2}>
@@ -91,6 +126,7 @@ const OTPReset = () => {
                   onClick={handleTogglePage}
                   variant="contained"
                   type="submit"
+                  fullWidth
                 >
                   Reset Password
                 </Button>
@@ -181,9 +217,18 @@ const OTPReset = () => {
               mt={3}
             >
               Didn’t receive an OTP?{" "}
-              <Link href="#" underline="hover" color="primary">
-                Resend
-              </Link>
+              <Button
+                variant="contained"
+                disabled={!resend}
+                color="primary"
+                onClick={() => {
+                  setCountdown(120);
+                  setResend(false);
+                  handleTogglePage();
+                }}
+              >
+                {!resend ? `Resend otp in ${countdown}s` : "Resend OTP"}
+              </Button>
             </Typography>
           </Box>
         </Box>

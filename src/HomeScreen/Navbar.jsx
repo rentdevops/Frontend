@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  InputBase,
+  TextField,
+  Paper,
+} from "@mui/material";
 import { AccountCircle, Search, AddCircleOutlined } from "@mui/icons-material";
 import ToggleNav from "./ToggleNav";
 import { Link, NavLink } from "react-router-dom";
 import { useGlobalHooks } from "../context";
 import TemporaryDrawer from "./Drawer";
+import SearchPost from "./SearchPost";
+import axios from "axios";
 
 const Navbar = () => {
-  const [display, setDisplay] = useState(false);
-  const [searchResult, setSearchResult] = useState("");
-  const { toggleDrawer } = useGlobalHooks();
-  const navCtrl = () => {
-    setDisplay(!display);
-  };
+  const { toggleDrawer, openSearchBar, setOpenSearchBar, isUserLogin } =
+    useGlobalHooks();
 
+  const handleClickOpen = () => {
+    setOpenSearchBar(true);
+  };
   return (
     <div>
       <div className="navber">
@@ -27,73 +35,66 @@ const Navbar = () => {
         >
           <NavLink to="/">
             <div className="logo">
-              <h1>logo</h1>
+              <h1
+                style={{
+                  fontWeight: 600,
+                  textShadow: "2px 2px white",
+                  fontSize: "24px",
+                  color: "black",
+                }}
+              >
+                TRENDZ
+              </h1>
             </div>
           </NavLink>
           <Box
             sx={{
               display: { xs: "none", sm: "none", md: "block", color: "white" },
             }}
-          >
-            <TextField
-              id="input-with-icon-textfield"
-              variant="filled"
-              color="secondary"
-              type="search"
-              placeholder="Search..."
-              onChange={(e) => setSearchResult(e.target.value)}
-              value={searchResult}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search color="secondary" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </Box>
+          ></Box>
 
           <div className="menu">
             <div>
               <Box
                 sx={{
-                  display: { xs: "block", sm: "block", md: "none" },
                   marginLeft: 4,
                 }}
               >
+                <SearchPost />
                 <IconButton
                   size="large"
                   edge="end"
                   aria-label="account of current user"
                   aria-haspopup="true"
                   color="secondary"
-                  onClick={navCtrl}
+                  onClick={handleClickOpen}
                 >
                   <Search sx={{ fontSize: 34 }} />
                 </IconButton>
               </Box>
             </div>
-            <div>
-              <Link to="/create_blog">
-                <Box
-                  sx={{
-                    display: {},
-                  }}
-                >
-                  <IconButton
-                    size="large"
-                    edge="end"
-                    aria-label="account of current user"
-                    aria-haspopup="true"
-                    color="secondary"
+            {isUserLogin ? (
+              <div>
+                <Link to="/create_blog">
+                  <Box
+                    sx={{
+                      display: {},
+                    }}
                   >
-                    <AddCircleOutlined sx={{ fontSize: 34 }} />
-                  </IconButton>
-                </Box>
-              </Link>
-            </div>
+                    <IconButton
+                      size="large"
+                      edge="end"
+                      aria-label="account of current user"
+                      aria-haspopup="true"
+                      color="secondary"
+                    >
+                      <AddCircleOutlined sx={{ fontSize: 34 }} />
+                    </IconButton>
+                  </Box>
+                </Link>
+              </div>
+            ) : null}
+
             <div>
               <IconButton
                 size="large"
@@ -109,7 +110,6 @@ const Navbar = () => {
           </div>
         </Box>
       </div>
-      <ToggleNav display={display} />
       <TemporaryDrawer />
     </div>
   );

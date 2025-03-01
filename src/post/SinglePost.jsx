@@ -3,6 +3,22 @@ import { useParams } from "react-router-dom";
 import { useGlobalHooks } from "../context";
 import axios from "axios";
 import {
+  FacebookIcon,
+  FacebookShareButton,
+  FacebookShareCount,
+  PinterestIcon,
+  PinterestShareButton,
+  RedditIcon,
+  RedditShareButton,
+  TelegramIcon,
+  ThreadsIcon,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+  XIcon,
+} from "react-share";
+import {
   Avatar,
   Card,
   CardActions,
@@ -12,12 +28,14 @@ import {
   IconButton,
   CardMedia,
   Box,
+  Stack,
+  Skeleton,
 } from "@mui/material";
 import { ThumbUp } from "@mui/icons-material";
 import ShareIcon from "@mui/icons-material/Share";
 import { red } from "@mui/material/colors";
 import Comments from "./Comments";
-
+const shareUrl = "http://localhost:5173/post";
 const SinglePost = () => {
   const { id } = useParams();
   const { baseurl } = useGlobalHooks();
@@ -55,7 +73,14 @@ const SinglePost = () => {
           }}
         >
           {loading ? (
-            "loading"
+            <>
+              <Skeleton
+                animation="wave"
+                height={10}
+                style={{ marginBottom: 6 }}
+              />
+              <Skeleton animation="wave" height={10} width="20%" />
+            </>
           ) : (
             <Box>
               <Typography
@@ -67,7 +92,12 @@ const SinglePost = () => {
             </Box>
           )}
           {loading ? (
-            "loading image..."
+            <Skeleton
+              animation="wave"
+              variant="rectangular"
+              width={400}
+              height={400}
+            />
           ) : (
             <CardMedia
               component="img"
@@ -79,30 +109,71 @@ const SinglePost = () => {
           )}
 
           <CardContent>
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{
-                color: "text.primary",
-                textAlign: "center",
-                fontWeight: 600,
-              }}
-            >
-              {title}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              {content}
-            </Typography>
+            {loading ? (
+              <>
+                <Skeleton
+                  animation="wave"
+                  height={10}
+                  style={{ marginBottom: 6 }}
+                />
+                <Skeleton
+                  animation="wave"
+                  height={10}
+                  style={{ marginBottom: 6 }}
+                />
+              </>
+            ) : (
+              <>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{
+                    color: "text.primary",
+                    textAlign: "center",
+                    fontWeight: 600,
+                  }}
+                >
+                  {title}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  {content}
+                </Typography>
+              </>
+            )}
           </CardContent>
-          <CardActions disableSpacing>
-            <IconButton aria-label="add to favorites">
-              <ThumbUp />
-            </IconButton>
-            <IconButton aria-label="share">
-              <ShareIcon />
-            </IconButton>
-          </CardActions>
+          {loading ? (
+            <>
+              <Skeleton
+                animation="wave"
+                height={10}
+                style={{ marginBottom: 6 }}
+              />
+              <Skeleton
+                animation="wave"
+                height={10}
+                style={{ marginBottom: 6 }}
+              />
+            </>
+          ) : (
+            <>
+              <Stack m={4} direction="row" spacing={2}>
+                <TwitterShareButton url={`${shareUrl}/${id}`} title={title}>
+                  <XIcon size={32} />
+                </TwitterShareButton>
+                <FacebookShareButton hashtag={title} url={`${shareUrl}/${id}`}>
+                  <FacebookIcon size={32} />
+                </FacebookShareButton>
+                <PinterestShareButton url={`${shareUrl}/${id}`}>
+                  <PinterestIcon size={32} />
+                </PinterestShareButton>
+                <WhatsappShareButton url={`${shareUrl}/${id}`}>
+                  <WhatsappIcon size={32} />
+                </WhatsappShareButton>
+              </Stack>
+            </>
+          )}
         </Card>
+
         <hr />
       </div>
       <Comments postId={id} />

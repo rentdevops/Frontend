@@ -23,7 +23,7 @@ createRoot(document.getElementById("root")).render(
     <ThemeProvider theme={theme}>
       <Context>
         <BrowserRouter>
-          <Suspense fallback={<h1>Loading...</h1>}>
+          <Suspense>
             <Routes>
               <Route path="/" element={<Layout />}>
                 {/* Child Routes */}

@@ -26,11 +26,11 @@ import ReplyComment from "./replyComment";
 const Comments = ({ postId }) => {
   const [input, setInput] = useState("");
   const [commentList, setCommentList] = useState([]);
-  const { baseurl } = useGlobalHooks();
+  const { baseurl, user, isUserLogin } = useGlobalHooks();
   const [open, setOpen] = useState(false);
   const [replyOpen, setReplyOpen] = useState(false);
-  const [commentId, setCommentId] = useState("");
-
+  const [commentId, setCommentId] = useState(null);
+  const [toggleSlice, setToggleSlice] = useState(true);
   const openReply = (id) => {
     setReplyOpen(true);
     setCommentId(id);
@@ -60,17 +60,24 @@ const Comments = ({ postId }) => {
   useEffect(() => {
     const fetchComments = async () => {
       const response = await axios.get(`${baseurl}/comment/${postId}`);
-
-      setCommentList(response.data.message);
+      console.log(response.data.message);
+      if (toggleSlice) {
+        const filComment = response.data.message.slice(0, 6);
+        setCommentList(filComment);
+      } else {
+        setCommentList(response.data.message);
+      }
     };
     fetchComments();
-  }, []);
+  }, [toggleSlice]);
+
   return (
     <div>
-      <Box>
+      <Box mt={4}>
         <Stack direction="row" spacing={2} sx={{ justifyContent: "center" }}>
           <TextField
             variant="outlined"
+            disabled={!isUserLogin}
             type="text"
             placeholder="share your thought"
             value={input}
@@ -80,7 +87,7 @@ const Comments = ({ postId }) => {
           />
           <Button
             onClick={postComment}
-            disabled={input.trim() == ""}
+            disabled={input == ""}
             variant="contained"
           >
             <Send />
@@ -89,19 +96,24 @@ const Comments = ({ postId }) => {
         <Typography
           gutterBottom
           variant="body1"
-          component="h4"
-          sx={{ textAlign: "center" }}
+          component="h3"
+          sx={{ textAlign: "center", fontWeight: 600 }}
           color="secondary"
           mt={4}
         >
-          Comments
+          <Divider>Latest Comments</Divider>
         </Typography>
         <Box>
           {commentList?.map((comment) => {
+            const reply = comment.replies.find((item) => item.reply) ?? {};
+            console.log(reply);
             const date = new Date(comment.createdAt).toDateString();
-
             return (
-              <Box sx={{ textTransform: "capitalize" }} key={comment._id}>
+              <Box
+                onClick={() => openReply(comment._id)}
+                sx={{ textTransform: "capitalize" }}
+                key={comment._id}
+              >
                 <Paper elevation={2} sx={{ position: "relative" }}>
                   <Stack>
                     <Typography variant="body1 " sx={{ marginRight: 3 }}>
@@ -111,6 +123,9 @@ const Comments = ({ postId }) => {
                       {date}
                     </Typography>
                   </Stack>
+                  <Box sx={{ position: "absolute", right: 12, bottom: 2 }}>
+                    <Typography sx={{ fontSize: 12 }}>{reply.reply}</Typography>
+                  </Box>
                   <Box sx={{ position: "absolute", right: 0, top: 1 }}>
                     <Button
                       variant="text"
@@ -129,6 +144,16 @@ const Comments = ({ postId }) => {
               </Box>
             );
           })}
+          <Divider>
+            {commentList.length >= 6 && (
+              <Button
+                onClick={() => setToggleSlice(!toggleSlice)}
+                variant="text"
+              >
+                {!toggleSlice ? "Show less" : "Show more"}
+              </Button>
+            )}
+          </Divider>
         </Box>
         <ReplyComment
           open={replyOpen}

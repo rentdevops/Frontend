@@ -102,7 +102,11 @@ const PostBlog = () => {
           noValidate
           autoComplete="on"
         >
-          <Typography color="secondary" variant="h3">
+          <Typography
+            color="secondary"
+            variant="h5"
+            sx={{ fontFamily: "fantasy", fontWeight: 500 }}
+          >
             Create blog
           </Typography>
           <div>
@@ -151,7 +155,11 @@ const PostBlog = () => {
         </Box>
 
         <Box mt={4} sx={{ width: "300px", height: "auto" }}>
-          <Typography gutterBottom variant="h5">
+          <Typography
+            gutterBottom
+            variant="h5"
+            sx={{ fontFamily: "fantasy", fontWeight: 500 }}
+          >
             Post Review
           </Typography>
 
@@ -187,7 +195,7 @@ const PostBlog = () => {
           aria-describedby="alert-dialog-description"
         >
           <DialogContent>
-            <Alert severity="success">Blog created!</Alert>
+            <Alert severity="success">Blog created successfully.</Alert>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} autoFocus>

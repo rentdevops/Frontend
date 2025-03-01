@@ -233,12 +233,6 @@ const SignInUpForm = () => {
           />
         )}
 
-        {isSignInMode && (
-          <Link to="/passwdReset" variant="body2">
-            Forgot Password?
-          </Link>
-        )}
-
         {isSignInMode ? (
           <Button
             variant="contained"
@@ -261,6 +255,21 @@ const SignInUpForm = () => {
           </Button>
         )}
 
+        {isSignInMode && (
+          <Box m={2}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{ textAlign: "center" }}
+              gutterBottom
+            >
+              or
+            </Typography>
+            <Link to="/passwdReset" variant="body2">
+              Forgot Password?
+            </Link>
+          </Box>
+        )}
         <Button variant="text" color="secondary" fullWidth onClick={toggleMode}>
           {isSignInMode
             ? "Don't have an account? Sign Up"
