@@ -1,0 +1,55 @@
+name: CI/CD Pipeline to AWS with Docker Hub
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - cicd
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  build-and-push:
+    name: Build Docker Image, Push to Docker Hub
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: chrystjr2/chatbackend
+      IMAGE_TAG: dev-${{ github.run_number }}  
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3 
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+  
+      - name: Build and push Docker image
+        run: |
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+          docker push $IMAGE_NAME:$IMAGE_TAG
+      - name: Clone ArgoCD repository
+        uses: actions/checkout@v3
+        with:
+          repository: Lantan-Property/argocd 
+          token: ${{ secrets.CHECKOUT_TOKEN }}  
+          path: chatnode
+
+      - name: List files in the current directory
+        run: |
+          ls -la lantan
+      - name: Update ArgoCD deployment.yaml
+        run: |
+          sed -i "s|image: .*$|image: $IMAGE_NAME:$IMAGE_TAG|g" lantan/lantan/backend.yml
+      - name: Commit and push changes to ArgoCD repo
+        run: |
+          cd lantan
+          git config --global user.email "chriscrsov@gmail.com"
+          git config --global user.name "chrystjr"
+          git add lantan/backend.yml  
+          git commit -m "Update image tag to $IMAGE_TAG"
+          git push
