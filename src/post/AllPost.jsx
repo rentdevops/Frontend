@@ -13,13 +13,14 @@ import {
 } from "@mui/material";
 import PostLoader from "./PostLoader";
 import { useGlobalHooks } from "../context";
+import ErrorPage from "./ErrorPage";
 
 const AllPost = () => {
   const [page, setPage] = React.useState(1);
   const handleChange = (event, value) => {
     setPage(value);
   };
-  const { blogs, loading, posts, lovedPost } = useGlobalHooks();
+  const { blogs, loading, posts, lovedPost, networkErr } = useGlobalHooks();
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
@@ -34,6 +35,14 @@ const AllPost = () => {
   useEffect(() => {
     posts(page);
   }, [page]);
+
+  if (networkErr) {
+    return (
+      <div>
+        <ErrorPage />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -63,11 +72,14 @@ const AllPost = () => {
         {/* {loading ? <PostLoader /> : null} */}
         <Grid2 container spacing={2}>
           {blogs.map((post) => (
-            <Item key={post._id}>
+            <Box
+              sx={{ display: "flex", justifyContent: "center" }}
+              key={post._id}
+            >
               <Grid2 size={{ xs: 12, md: 4, sm: 6 }}>
                 <Blog post={post} postId={post._id} />
               </Grid2>
-            </Item>
+            </Box>
           ))}
         </Grid2>
       </Box>

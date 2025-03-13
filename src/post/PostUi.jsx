@@ -15,7 +15,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Link } from "react-router-dom";
-import { Pagination, Skeleton, Stack } from "@mui/material";
+import { Button, Pagination, Skeleton, Stack } from "@mui/material";
 import { useGlobalHooks } from "../context";
 
 export default function Blog({ post }) {
@@ -87,13 +87,13 @@ export default function Blog({ post }) {
         ) : (
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {`${content.substring(0, 50)}...`}
-            <Link
-              style={{ textTransform: "capitalize", fontSize: "16px" }}
-              to={`/post/${_id}`}
+            <Button
+              variant="text"
+              sx={{ textTransform: "capitalize", fontSize: "16px" }}
               onClick={() => setOpenSearchBar(false)}
             >
-              see more
-            </Link>
+              <Link to={`/post/${_id}`}>Read more</Link>
+            </Button>
           </Typography>
         )}
       </CardContent>

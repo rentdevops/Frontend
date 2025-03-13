@@ -105,6 +105,8 @@ const SignInUpForm = () => {
 
   const toggleMode = () => {
     setIsSignInMode(!isSignInMode);
+    setErrMsg("");
+    setFormData({ ...formData, password: "", confirmpasswd: "" });
   };
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -128,7 +130,7 @@ const SignInUpForm = () => {
       }}
     >
       <Paper elevation={6}>
-        <Stack sx={{ width: "100%" }} spacing={2}>
+        <Stack sx={{ width: "100%", marginBottom: 4 }} spacing={2}>
           {errMsg && (
             <Alert variant="filled" severity="error">
               {errMsg}
