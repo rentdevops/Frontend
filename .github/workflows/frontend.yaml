@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     branches:
-      - cicd
+      - main
     paths-ignore:
       - 'README.md'
 
@@ -15,7 +15,7 @@ jobs:
     name: Build Docker Image, Push to Docker Hub
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: chrystjr2/chatbackend
+      IMAGE_NAME: chrystjr2/chatfrontend
       IMAGE_TAG: dev-${{ github.run_number }}  
       
     steps:
@@ -26,7 +26,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
   
       - name: Build and push Docker image
         run: |
@@ -35,21 +35,22 @@ jobs:
       - name: Clone ArgoCD repository
         uses: actions/checkout@v3
         with:
-          repository: Lantan-Property/argocd 
+          repository: rentdevops/argocd 
           token: ${{ secrets.CHECKOUT_TOKEN }}  
           path: chatnode
+          # ref: v2
 
       - name: List files in the current directory
         run: |
-          ls -la lantan
+          ls -la chatnode
       - name: Update ArgoCD deployment.yaml
         run: |
-          sed -i "s|image: .*$|image: $IMAGE_NAME:$IMAGE_TAG|g" lantan/lantan/backend.yml
+          sed -i "s|image: .*$|image: $IMAGE_NAME:$IMAGE_TAG|g" chatnode/chatnode/frontend.yaml
       - name: Commit and push changes to ArgoCD repo
         run: |
-          cd lantan
+          cd chatnode
           git config --global user.email "chriscrsov@gmail.com"
           git config --global user.name "chrystjr"
-          git add lantan/backend.yml  
+          git add chatnode/frontend.yaml  
           git commit -m "Update image tag to $IMAGE_TAG"
           git push
