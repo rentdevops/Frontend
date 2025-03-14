@@ -16,6 +16,9 @@ COPY . .
 # Build the React app
 RUN npm run build
 
+# Check the build output directory
+RUN ls -la
+
 # Use a lightweight web server image to serve the React app
 FROM nginx:stable-alpine
 
@@ -26,10 +29,18 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy build files from the previous stage
-COPY --from=build /app/build .
+# For Create React App, the build directory is typically 'build'
+# For Next.js, it might be '.next' or 'out'
+# For Vite, it's typically 'dist'
+COPY --from=build /app/dist .
+# Alternative paths (uncomment the correct one):
+# COPY --from=build /app/build .
+# COPY --from=build /app/out .
+# COPY --from=build /app/.next .
 
 # Expose the default NGINX port
 EXPOSE 80
 
 # Start NGINX server
 CMD ["nginx", "-g", "daemon off;"]
+
