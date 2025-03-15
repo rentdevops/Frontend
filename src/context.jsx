@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 const AppContext = createContext();
-const baseurl = "http://localhost:4000/api/v1";
+const baseurl = "https://api.hccloudtech.online/api/v1";
 import "./axios";
 import axios from "axios";
 const Context = ({ children }) => {
-  axios.defaults.baseURL = "http://localhost:4000/api/v1";
+  axios.defaults.baseURL = "https://api.hccloudtech.online/api/v1";
   axios.defaults.headers.common["Cache-Control"] =
     "no-cache, no-store, must-revalidate";
   axios.defaults.headers.common["Pragma"] = "no-cache";
@@ -63,7 +63,7 @@ const Context = ({ children }) => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://localhost:4000/api/v1/post?page=${page}`
+        `https://api.hccloudtech.online/api/v1/post?page=${page}`
       );
       setLoading(false);
       setBlogs(res.data.data);
