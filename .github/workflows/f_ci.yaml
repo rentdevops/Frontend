@@ -35,22 +35,22 @@ jobs:
       - name: Clone ArgoCD repository
         uses: actions/checkout@v3
         with:
-          repository: rentdevops/argocd 
+          repository: rentdevops/train_argocd 
           token: ${{ secrets.CHECKOUT_TOKEN }}  
-          path: chatnode
+          path: training
           # ref: v2
 
       - name: List files in the current directory
         run: |
-          ls -la chatnode
+          ls -la training
       - name: Update ArgoCD deployment.yaml
         run: |
-          sed -i "s|image: .*$|image: $IMAGE_NAME:$IMAGE_TAG|g" chatnode/chatnode/frontend.yaml
+          sed -i "s|image: .*$|image: $IMAGE_NAME:$IMAGE_TAG|g" training/training/frontend.yaml
       - name: Commit and push changes to ArgoCD repo
         run: |
-          cd chatnode
+          cd training
           git config --global user.email "chriscrsov@gmail.com"
           git config --global user.name "chrystjr"
-          git add chatnode/frontend.yaml  
+          git add training/frontend.yaml  
           git commit -m "Update image tag to $IMAGE_TAG"
           git push
