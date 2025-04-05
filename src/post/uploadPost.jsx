@@ -15,6 +15,8 @@ import {
   Stack,
   AlertTitle,
 } from "@mui/material";
+import { useGlobalHooks } from "../context";
+
 import { Container, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -27,6 +29,7 @@ const PostBlog = () => {
   const [errorPage, setErrorPage] = useState("");
   const [profile, setProfile] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
+  const { baseurl } = useGlobalHooks();
 
   const [open, setOpen] = useState(false);
   const valueChange = (e) => {
@@ -57,7 +60,7 @@ const PostBlog = () => {
       formdata.append("content", inputs.content);
 
       const data = await axios.post(
-        `http://localhost:4000/api/v1/post/createpost`,
+        `${baseurl}/post/createpost`,
 
         formdata,
 

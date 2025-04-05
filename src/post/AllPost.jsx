@@ -61,14 +61,7 @@ const AllPost = () => {
           Trending Gist.
         </Typography>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
+      <Box>
         {/* {loading ? <PostLoader /> : null} */}
         <Grid2 container spacing={2}>
           {blogs.map((post) => (

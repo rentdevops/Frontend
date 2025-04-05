@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 const AppContext = createContext();
-const baseurl = "https://api.hccloudtech.online/api/v1";
+const baseurl = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 import "./axios";
 import axios from "axios";
 const Context = ({ children }) => {
-  axios.defaults.baseURL = "https://api.hccloudtech.online/api/v1";
+  axios.defaults.baseURL = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
   axios.defaults.headers.common["Cache-Control"] =
     "no-cache, no-store, must-revalidate";
   axios.defaults.headers.common["Pragma"] = "no-cache";
@@ -36,6 +36,7 @@ const Context = ({ children }) => {
       console.error(error);
     }
   };
+
   useEffect(() => {
     const user = async () => {
       try {
@@ -62,9 +63,7 @@ const Context = ({ children }) => {
     setNetworkErr(false);
     try {
       setLoading(true);
-      const res = await axios.get(
-        `https://api.hccloudtech.online/api/v1/post?page=${page}`
-      );
+      const res = await axios.get(`${baseurl}/post?page=${page}`);
       setLoading(false);
       setBlogs(res.data.data);
     } catch (error) {
@@ -74,26 +73,38 @@ const Context = ({ children }) => {
   };
 
   const handleLovePost = async (id, likedPost) => {
+    setBlogs((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === id
+          ? {
+              ...post,
+              likes: post.likes.some((like) => like._id === user._id)
+                ? post.likes.filter((like) => like._id !== user._id) // Unlike
+                : [...post.likes, { _id: user._id }], // Like
+            }
+          : post
+      )
+    );
+
     try {
+      // Send the request to the server
       const { data } = await axios.patch(`${baseurl}/post/likepost/${id}`);
-      console.log(data);
+    } catch (error) {
+      // In case of error, revert the optimistic update
+      console.error(error);
       setBlogs((prevPosts) =>
         prevPosts.map((post) =>
           post._id === id
             ? {
                 ...post,
-                likes: post.likes.includes(user._id)
-                  ? post.likes.filter((userId) => userId !== user._id) // Unlike
-                  : [...post.likes, user._id], // Like
+                likes: likedPost.likes, // Revert to the original likes
               }
             : post
         )
       );
-      posts();
-    } catch (error) {
-      console.error(error);
     }
   };
+
   return (
     <AppContext.Provider
       value={{
