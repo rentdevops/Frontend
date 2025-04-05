@@ -57,7 +57,8 @@ const PostBlog = () => {
       formdata.append("content", inputs.content);
 
       const data = await axios.post(
-        `http://localhost:4000/api/v1/post/createpost`,
+        `https://api.hccloudtech.online/api/v1/post/createpost`,
+        // `http://localhost:4000/api/v1/post/createpost`,
 
         formdata,
 
