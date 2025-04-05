@@ -25,6 +25,9 @@ FROM nginx:stable-alpine
 # Set working directory in the container
 WORKDIR /usr/share/nginx/html
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+
 # Remove default NGINX static files
 RUN rm -rf ./*
 
