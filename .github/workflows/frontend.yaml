@@ -37,7 +37,7 @@ jobs:
         with:
           repository: rentdevops/argocd 
           token: ${{ secrets.CHECKOUT_TOKEN_NEW }}  
-          path: chatnode
+          path: awsdevops
           # ref: v2
 
       # - name: List files in the current directory
