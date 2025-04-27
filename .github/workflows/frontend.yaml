@@ -36,21 +36,21 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: rentdevops/argocd 
-          token: ${{ secrets.CHECKOUT_TOKEN }}  
+          token: ${{ secrets.CHECKOUT_TOKEN_NEW }}  
           path: chatnode
           # ref: v2
 
-      - name: List files in the current directory
-        run: |
-          ls -la chatnode
+      # - name: List files in the current directory
+      #   run: |
+      #     ls -la chatnode
       - name: Update ArgoCD deployment.yaml
         run: |
-          sed -i "s|image: .*$|image: $IMAGE_NAME:$IMAGE_TAG|g" chatnode/chatnode/frontend.yaml
+          sed -i "s|image: .*$|image: $IMAGE_NAME:$IMAGE_TAG|g" awsdevops/awsdevops/frontend.yaml
       - name: Commit and push changes to ArgoCD repo
         run: |
-          cd chatnode
+          cd awsdevops
           git config --global user.email "chriscrsov@gmail.com"
-          git config --global user.name "chrystjr"
-          git add chatnode/frontend.yaml  
+          git config --global user.name "chriscrsov"
+          git add awsdevops/frontend.yaml  
           git commit -m "Update image tag to $IMAGE_TAG"
           git push
