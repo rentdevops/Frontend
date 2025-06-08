@@ -36,7 +36,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: rentdevops/argocd 
-          token: ${{ secrets.CHECKOUT_TOKEN_NEW }}  
+          # token: ${{ secrets.CHECKOUT_TOKEN_NEW }}  
+          token: ${{ secrets.CHECKOUT_TOKEN }}  
           path: awsdevops
           # ref: v2
 
